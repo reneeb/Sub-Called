@@ -1,0 +1,15 @@
+Changes
+MANIFEST
+META.yml
+Makefile.PL
+README
+lib/Sub/Called.pm
+t/00_load.t
+t/01_base.t
+t/02_module.t
+t/03_module2.t
+t/04_main.t
+t/96_boilerplate.t
+t/97_test_manifest.t
+t/98_pod.t
+t/99_pod-coverage.t
