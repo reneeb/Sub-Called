@@ -48,4 +48,4 @@ sub module_boilerplate_ok {
     );
 }
 
-module_boilerplate_ok('lib\Sub\Called.pm');
+module_boilerplate_ok('lib/Sub/Called.pm');

@@ -19,7 +19,7 @@ Version 0.01
 
 =cut
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 =head1 SYNOPSIS
 
@@ -33,6 +33,13 @@ our $VERSION = '0.01';
         }
     }
 
+=head1 EXPORTS
+
+There are no subroutines exported by default, but you can export all subroutines
+explicitly
+
+  use Sub::Called qw(with_ampersand);
+
 =head1 FUNCTIONS
 
 =head2 with_ampersand
@@ -42,6 +49,8 @@ our $VERSION = '0.01';
 sub with_ampersand {
     my $sub  = (caller(2))[3] || "main"; 
     my $line = (caller(1))[2];
+
+    my $func = (caller(1))[3];
     
     my $svref = \&{$sub};
     my $obj   = B::svref_2object( $svref );
@@ -49,18 +58,44 @@ sub with_ampersand {
     my $op      = $sub eq 'main' ? B::main_start() : $obj->START;
     my $is_line = 0;
     my $retval  = 0;
-    
+    my $is_gv   = 0;
+
+    my $test = B::main_cv;
+
     for(; $$op; $op = $op->next ){
         my $name    = $op->name;
         if( $name eq 'nextstate' ){
             $is_line = ( $op->line == $line );
         }
+        elsif( $name eq 'gv' ){
+           my $stash    = "";
+           my $globname = "";
+
+           if( B::class( $op ) eq 'PADOP' ){
+               my $sv = (( $test->PADLIST->ARRAY)[1]->ARRAY)[ $op->padix ];
+               if( $sv ){
+                   my $class = B::class( $sv );
+                   if( $class eq 'GV' ){
+                       $stash    = $sv->STASH->NAME;
+                       $globname = $sv->SAFENAME;
+                   }
+               }
+           }
+           else {
+              $globname = $op->gv->NAME;
+              $stash    = $op->gv->STASH->NAME; 
+           }
+
+           my $check = $stash . '::' . $globname;
+           $is_gv    = 1 if $check eq $func;
+        }
         
-        next unless $is_line and $name eq 'entersub';
+        next unless $is_line and $is_gv and $name eq 'entersub';
         
         my $priv = $op->private;
-        
-        if( $priv == 43 ){
+
+        my $key = 8;
+        if( ( $key & $priv) == $key and $priv > $key ){
             $retval = 1;
         }
         last;
@@ -69,7 +104,13 @@ sub with_ampersand {
     return $retval;
 }
 
-=head1 LIMITATIONS
+=head1 LIMITATIONS / TODO
+
+There are limitations and I don't know if I can solve these "problems".
+So this section is also named "TODO". If you know a solution for any
+of these limitations, please let me know.
+
+=head2 Subroutine References
 
 It seems that there are some problems with subroutine references.
 
@@ -83,6 +124,26 @@ This may not work:
     
   my $sub2 = main->can( 'test2' );
   &$sub2();
+
+=head2 Inside a module
+
+If you call subroutines in a module but outside any subroutine (so
+the subroutine calls are executed when the module is loaded), I cannot
+give a correct answer ;-)
+
+  package Check;
+  
+  use strict;
+  use warnings;
+  use Sub::Called qw(with_ampersand);
+  
+  &test;
+  
+  sub test {
+      if( with_ampersand() ){
+          print "yada yada yada\n";
+      }
+  }
 
 =head1 AUTHOR
 
