@@ -7,7 +7,7 @@ use B;
 use Exporter;
 
 our @ISA = qw(Exporter);
-our @EXPORT_OK = qw(with_ampersand);
+our @EXPORT_OK = qw(with_ampersand already_called not_called);
 
 =head1 NAME
 
@@ -15,21 +15,40 @@ Sub::Called - get information about how the subroutine is called
 
 =head1 VERSION
 
-Version 0.01
+Version 0.03
 
 =cut
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 =head1 SYNOPSIS
 
 
     use Sub::Called;
-
+    
     sub test {
         if( Sub::Called::with_ampersand() ){
             print "you called this subroutine this way: &test\n",
                   "note that this disables prototypes!\n";
+        }
+    }
+
+
+    use Sub::Called 'already_called', 'not_called';
+    
+    sub user {
+        unless (already_called) {   # only gets called once
+            My::Fixtures::Users->load;
+        }
+        ...
+    }
+    
+    sub schema {
+        if ( not_called ) {
+            # setup schema
+        }
+        else {
+            return $schema;
         }
     }
 
@@ -38,15 +57,38 @@ our $VERSION = '0.02';
 There are no subroutines exported by default, but you can export all subroutines
 explicitly
 
-  use Sub::Called qw(with_ampersand);
+  use Sub::Called qw(with_ampersand already_called not_called);
+
+=head2 C<already_called>
+
+This function must be called from inside a subroutine.  It will return false
+if the subroutine has not yet been called.  It will only return false once.
+
+This subroutine is only exported on demand.
+
+=head2 C<not_called>
+
+This function must be called from inside a subroutine.  It returns the
+opposite value of C<already_called>.  Aside from this, there is no difference.
+You may find aesthetically more pleasing.
+
+This subroutine is only exported on demand.
+
+=head2 C<with_ampersand>
+
+This function must be called from inside a subroutine. It returns 1 if the subroutine
+was called with an ampersand (e.g. C<&subroutine()>).
+
+This subroutine is only exported on demand.
 
 =head1 FUNCTIONS
 
-=head2 with_ampersand
+=head2 C<with_ampersand>
 
 =cut
 
 sub with_ampersand {
+    
     my $sub  = (caller(2))[3] || "main"; 
     my $line = (caller(1))[2];
 
@@ -104,6 +146,30 @@ sub with_ampersand {
     return $retval;
 }
 
+=head2 C<already_called>
+
+=cut
+
+my %called;
+
+sub already_called() {
+    my ( $package, $filename, $line, $subroutine ) = caller(1);
+    my $called = $called{$package}{$subroutine};
+    $called{$package}{$subroutine} = 1;
+    return $called;
+}
+
+=head2 C<not_called>
+
+=cut
+
+sub not_called() {
+    my ( $package, $filename, $line, $subroutine ) = caller(1);
+    my $called = $called{$package}{$subroutine};
+    $called{$package}{$subroutine} = 1;
+    return not $called;
+}
+
 =head1 LIMITATIONS / TODO
 
 There are limitations and I don't know if I can solve these "problems".
@@ -149,6 +215,8 @@ give a correct answer ;-)
 
 Renee Baecker, C<< <module at renee-baecker.de> >>
 
+Curtis "Ovid" Poe, C<< <ovid at cpan.org> >>
+
 =head1 BUGS
 
 Please report any bugs or feature requests to
@@ -189,7 +257,7 @@ L<http://search.cpan.org/dist/Sub-Called>
 
 =head1 COPYRIGHT & LICENSE
 
-Copyright 2008 Renee Baecker, all rights reserved.
+Copyright 2008 Renee Baecker, Curtis "Ovid" Poe, all rights reserved.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
