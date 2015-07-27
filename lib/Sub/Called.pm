@@ -1,5 +1,7 @@
 package Sub::Called;
 
+# ABSTRACT: get information about how the subroutine is called
+
 use warnings;
 use strict;
 
@@ -8,16 +10,6 @@ use Exporter;
 
 our @ISA = qw(Exporter);
 our @EXPORT_OK = qw(with_ampersand already_called not_called);
-
-=head1 NAME
-
-Sub::Called - get information about how the subroutine is called
-
-=head1 VERSION
-
-Version 0.03
-
-=cut
 
 our $VERSION = '0.03';
 
@@ -211,56 +203,15 @@ give a correct answer ;-)
       }
   }
 
-=head1 AUTHOR
+=head1 CONTRIBUTORS
 
 Renee Baecker, C<< <module at renee-baecker.de> >>
 
 Curtis "Ovid" Poe, C<< <ovid at cpan.org> >>
 
-=head1 BUGS
+=head1 ISSUE TRACKER & CODE REPOSITORY
 
-Please report any bugs or feature requests to
-C<bug-sub-called at rt.cpan.org>, or through the web interface at
-L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Sub-Called>.
-I will be notified, and then you'll automatically be notified of progress on
-your bug as I make changes.
-
-=head1 SUPPORT
-
-You can find documentation for this module with the perldoc command.
-
-    perldoc Sub::Called
-
-You can also look for information at:
-
-=over 4
-
-=item * AnnoCPAN: Annotated CPAN documentation
-
-L<http://annocpan.org/dist/Sub-Called>
-
-=item * CPAN Ratings
-
-L<http://cpanratings.perl.org/d/Sub-Called>
-
-=item * RT: CPAN's request tracker
-
-L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Sub-Called>
-
-=item * Search CPAN
-
-L<http://search.cpan.org/dist/Sub-Called>
-
-=back
-
-=head1 ACKNOWLEDGEMENTS
-
-=head1 COPYRIGHT & LICENSE
-
-Copyright 2008 Renee Baecker, Curtis "Ovid" Poe, all rights reserved.
-
-This program is free software; you can redistribute it and/or modify it
-under the same terms as Perl itself.
+An issue tracker and the code repository are available at L<http://github.com/reneeb/Sub-Called>.
 
 =cut
 
