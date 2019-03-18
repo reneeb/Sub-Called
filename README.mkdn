@@ -1,0 +1,187 @@
+[![Build Status](https://travis-ci.org/reneeb/Sub-Called.svg?branch=master)](https://travis-ci.org/reneeb/Sub-Called)
+[![Kwalitee status](http://cpants.cpanauthors.org/dist/Sub-Called.png)](http://cpants.charsbar.org/dist/overview/Sub-Called)
+[![GitHub issues](https://img.shields.io/github/issues/reneeb/Sub-Called.svg)](https://github.com/reneeb/Sub-Called/issues)
+
+# NAME
+
+Sub::Called - get information about how the subroutine is called
+
+# VERSION
+
+version 0.03
+
+# SYNOPSIS
+
+    use Sub::Called;
+    
+    sub test {
+        if( Sub::Called::with_ampersand() ){
+            print "you called this subroutine this way: &test\n",
+                  "note that this disables prototypes!\n";
+        }
+    }
+
+
+    use Sub::Called 'already_called', 'not_called';
+    
+    sub user {
+        unless (already_called) {   # only gets called once
+            My::Fixtures::Users->load;
+        }
+        ...
+    }
+    
+    sub schema {
+        if ( not_called ) {
+            # setup schema
+        }
+        else {
+            return $schema;
+        }
+    }
+
+# EXPORTS
+
+There are no subroutines exported by default, but you can export all subroutines
+explicitly
+
+    use Sub::Called qw(with_ampersand already_called not_called);
+
+## `already_called`
+
+This function must be called from inside a subroutine.  It will return false
+if the subroutine has not yet been called.  It will only return false once.
+
+This subroutine is only exported on demand.
+
+## `not_called`
+
+This function must be called from inside a subroutine.  It returns the
+opposite value of `already_called`.  Aside from this, there is no difference.
+You may find aesthetically more pleasing.
+
+This subroutine is only exported on demand.
+
+## `with_ampersand`
+
+This function must be called from inside a subroutine. It returns 1 if the subroutine
+was called with an ampersand (e.g. `&subroutine()`).
+
+This subroutine is only exported on demand.
+
+# FUNCTIONS
+
+## `with_ampersand`
+
+## `already_called`
+
+## `not_called`
+
+# LIMITATIONS / TODO
+
+There are limitations and I don't know if I can solve these "problems".
+So this section is also named "TODO". If you know a solution for any
+of these limitations, please let me know.
+
+## Subroutine References
+
+It seems that there are some problems with subroutine references.
+
+This may not work:
+
+    sub test2 {
+        if( Sub::Called::with_ampersand() ){
+            die "die hard";
+        }
+    };
+      
+    my $sub2 = main->can( 'test2' );
+    &$sub2();
+
+## Inside a module
+
+If you call subroutines in a module but outside any subroutine (so
+the subroutine calls are executed when the module is loaded), I cannot
+give a correct answer ;-)
+
+    package Check;
+    
+    use strict;
+    use warnings;
+    use Sub::Called qw(with_ampersand);
+    
+    &test;
+    
+    sub test {
+        if( with_ampersand() ){
+            print "yada yada yada\n";
+        }
+    }
+
+# CONTRIBUTORS
+
+Renee Baecker, `<module at renee-baecker.de>`
+
+Curtis "Ovid" Poe, `<ovid at cpan.org>`
+
+# ISSUE TRACKER & CODE REPOSITORY
+
+An issue tracker and the code repository are available at [http://github.com/reneeb/Sub-Called](http://github.com/reneeb/Sub-Called).
+
+
+
+# Development
+
+The distribution is contained in a Git repository, so simply clone the
+repository
+
+```
+$ git clone git://github.com/reneeb/Sub-Called.git
+```
+
+and change into the newly-created directory.
+
+```
+$ cd Sub-Called
+```
+
+The project uses [`Dist::Zilla`](https://metacpan.org/pod/Dist::Zilla) to
+build the distribution, hence this will need to be installed before
+continuing:
+
+```
+$ cpanm Dist::Zilla
+```
+
+To install the required prequisite packages, run the following set of
+commands:
+
+```
+$ dzil authordeps --missing | cpanm
+$ dzil listdeps --author --missing | cpanm
+```
+
+The distribution can be tested like so:
+
+```
+$ dzil test
+```
+
+To run the full set of tests (including author and release-process tests),
+add the `--author` and `--release` options:
+
+```
+$ dzil test --author --release
+```
+
+# AUTHOR
+
+Renee Baecker <reneeb@cpan.org>
+
+# COPYRIGHT AND LICENSE
+
+This software is Copyright (c) 2008 by Renee Baecker.
+
+This is free software, licensed under:
+
+    The Artistic License 2.0 (GPL Compatible)
