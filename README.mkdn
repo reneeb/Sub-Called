@@ -8,7 +8,7 @@ Sub::Called - get information about how the subroutine is called
 
 # VERSION
 
-version 0.04
+version 0.05
 
 # SYNOPSIS
 
