@@ -89,12 +89,6 @@ sub with_ampersand {
     my $svref = \&{$sub};
     my $obj   = B::svref_2object( $svref );
 
-use Data::Printer;
-p $obj;
-p @{[  $sub, $line, $func ]};
-p @{[ caller(2) ]};
-p @{[ caller(1) ]};
-    
     my $op      = $sub eq 'main' ? B::main_start() : $obj->START;
     my $is_line = 0;
     my $retval  = 0;
