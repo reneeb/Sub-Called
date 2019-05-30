@@ -11,7 +11,7 @@ use Exporter;
 our @ISA = qw(Exporter);
 our @EXPORT_OK = qw(with_ampersand already_called not_called);
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 =head1 SYNOPSIS
 
