@@ -115,9 +115,13 @@ sub with_ampersand {
                    }
                }
            }
-           else {
+           elsif ('GV' eq ( my $class = B::class( $op->gv )) ) {
               $globname = $op->gv->NAME;
               $stash    = $op->gv->STASH->NAME; 
+           }
+	   else {
+	      next if $class eq "IV";
+	      die "$name -> $class";
            }
 
            my $check = $stash . '::' . $globname;
