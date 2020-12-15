@@ -31,7 +31,6 @@ jobs:
         with:
           perl-version: ${{ matrix.perl }}
           multi-thread: ${{ matrix.threaded }}
-      - run: apt install build-essential
       - run: cpanm ExtUtils::MakeMaker Module::Build Dist::Zilla
       - run: perl -V
       - run: |
